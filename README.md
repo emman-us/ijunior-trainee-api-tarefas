@@ -1,13 +1,15 @@
 # API de Tarefas
 
-API REST de gerenciamento de tarefas desenvolvida com Node.js, TypeScript e
-Express. As tarefas são armazenadas em memória e são apagadas quando o servidor
-é reiniciado.
+API REST de gerenciamento de tarefas desenvolvida com Node.js, TypeScript,
+Express, MySQL e Prisma. As tarefas ficam armazenadas no banco de dados e
+permanecem disponíveis após o servidor ser reiniciado.
 
 ## Estrutura do projeto
 
 ```text
 src/
+├── config/
+│   └── prismaClient.ts
 ├── controllers/
 │   └── TaskController.ts
 ├── routes/
@@ -15,13 +17,18 @@ src/
 ├── services/
 │   └── TaskService.ts
 └── server.ts
+prisma/
+├── migrations/
+└── schema.prisma
 ```
 
 - **Routes:** relaciona cada método e endereço HTTP ao método correspondente do
   Controller.
 - **Controller:** recebe os dados da requisição, chama o Service e define a
   resposta HTTP.
-- **Service:** guarda o array de tarefas e contém as regras do CRUD.
+- **Service:** contém as regras do CRUD e acessa o banco por meio do Prisma.
+- **Prisma Client:** mantém uma única instância do cliente de banco de dados.
+- **Schema e migrations:** definem a tabela `Task` e versionam sua criação.
 - **Server:** configura o Express e disponibiliza as rotas a partir de
   `/tasks`.
 
@@ -31,6 +38,17 @@ Instale as dependências:
 
 ```bash
 npm install
+```
+
+Crie um banco MySQL chamado `api_tarefas`. Depois, copie `.env.example` para
+`.env` e ajuste usuário, senha, endereço, porta e nome do banco na variável
+`DATABASE_URL`.
+
+Aplique a migration e gere o Prisma Client:
+
+```bash
+npm run prisma:migrate
+npm run prisma:generate
 ```
 
 Inicie o servidor em modo de desenvolvimento:
@@ -70,30 +88,3 @@ GET /tasks?completed=true
 GET /tasks?completed=false
 ```
 
-## Exemplo de criação
-
-```json
-{
-  "title": "Estudar Node.js"
-}
-```
-
-Toda tarefa criada recebe automaticamente um `id` e começa com
-`"completed": false`.
-
-## Testes no Postman
-
-O arquivo `api-tarefas.postman.json` pode ser importado no Postman para testar
-as cinco requisições. Mantenha o servidor ligado com `npm run dev` enquanto
-executa os testes.
-
-Ordem sugerida:
-
-1. Criar tarefa.
-2. Listar tarefas.
-3. Buscar tarefa pelo ID.
-4. Atualizar tarefa.
-5. Apagar tarefa.
-
-Nas requisições que usam `/tasks/:id`, substitua `:id` pelo número retornado na
-criação, por exemplo: `/tasks/1`.

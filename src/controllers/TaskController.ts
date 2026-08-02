@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { TaskService } from '../services/TaskService';
 
-// Uso uma única instância do Service para que todas as requisições acessem
-// o mesmo array de tarefas enquanto o servidor estiver ligado.
+// Uso uma única instância do Service para atender todas as requisições.
 const taskService = new TaskService();
 
 // O Controller recebe a requisição, chama o Service e monta a resposta HTTP.
@@ -60,7 +59,7 @@ class TaskController {
 
     const task = await taskService.findById(id);
 
-    // O Service retorna undefined quando não encontra uma tarefa com esse ID.
+    // O Service retorna null quando não encontra uma tarefa com esse ID.
     if (!task) {
       return res.status(404).json({ message: 'Tarefa não encontrada.' });
     }
